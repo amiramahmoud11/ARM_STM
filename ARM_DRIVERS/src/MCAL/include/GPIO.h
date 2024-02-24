@@ -6,9 +6,16 @@
 
 /*GPIO A,B,C,.... base address*/
 
-#define GPIOA_BASE_ADDRESS   0x40020000
+/*#define GPIOA_BASE_ADDRESS   0x40020000
 #define GPIOB_BASE_ADDRESS   0x40020400 
 #define GPIOC_BASE_ADDRESS   0x40020800
+*/
+
+/*******Macros for the GPIO ports*******/
+#define GPIO_PORT_A  (void *)0x40020000
+#define GPIO_PORT_B  (void *)0x40020400
+#define GPIO_PORT_C  (void *)0x40020800
+
 
 /******** gpio pins ***********/
 
@@ -30,10 +37,10 @@
 #define GPIO_PIN_15 0x0000000F
 
 /****************************************************************/
-#define GPIOA   (volatile GPIO_MEMMAP_t *(GPIOA_BASE_ADDRESS ))
+/*#define GPIOA   (volatile GPIO_MEMMAP_t *(GPIOA_BASE_ADDRESS ))
 #define GPIOB   (volatile GPIO_MEMMBP_t *(GPIOB_BASE_ADDRESS ))
 #define GPIOC   (volatile GPIO_MEMMAP_t *(GPIOC_BASE_ADDRESS ))
-
+*/
 /********************/
 
 /*Parameter to be used for function:
@@ -77,7 +84,7 @@
 
 /****
  * 
- * /*
+ * 
  * Alternative function
  * */
 
@@ -137,7 +144,7 @@ typedef enum{
 
 Ret_enumerrorStatuse GPIO_Init(GPIO_pin_t *Copy_pin_elements);
 Ret_enumerrorStatuse GPIO_SetPin_Value(  void *GPIO_port , u32 GPIO_pin , u32 GPIO_Value_State);
-Ret_enumerrorStatuse GPIO_GetPin_Value(   void *GPIO_port , u32 GPIO_pin , u32 GPIO_Value_State);
+Ret_enumerrorStatuse GPIO_GetPin_Value(  void *GPIO_port , u32 GPIO_pin , u8 *GPIO_Value_State);
 Ret_enumerrorStatuse GPIO_AlternateFunction(  void  *GPIO_port , u32 GPIO_pin , u32 GPIO_AltFun);
 
 

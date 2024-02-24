@@ -18,16 +18,16 @@
 
 typedef struct 
 {
- u32   MODER;
- u32  OTYPER;
- u32 OSPEEDR ;
- u32   PUPDR;
- u32    IDR;
- u32    ODR; 
- u32   BSRR ;
- u32   LCKR ;
- u32   AFRL ;
- u32   AFRH ;
+ volatile u32   MODER;
+ volatile u32  OTYPER;
+ volatile u32 OSPEEDR ;
+ volatile u32   PUPDR;
+ volatile u32    IDR;
+ volatile u32    ODR; 
+ volatile u32   BSRR ;
+ volatile u32   LCKR ;
+ volatile u32   AFRL ;
+ volatile u32  AFRH ;
 
     
 }GPIO_MEMMAP_t;
@@ -41,7 +41,7 @@ Ret_enumerrorStatuse GPIO_Init(GPIO_pin_t *Copy_GPIO_elements)
     {
         Loc_Ret_errorState=Invalid_inputs;
     }
-    else if ((Copy_GPIO_elements->port >GPIOC_BASE_ADDRESS)||(Copy_GPIO_elements->pin > GPIO_PIN_15))
+    else if ((Copy_GPIO_elements->port >GPIO_PORT_C)||(Copy_GPIO_elements->pin > GPIO_PIN_15))
     {
         Loc_Ret_errorState=Invalid_inputs;
     }
