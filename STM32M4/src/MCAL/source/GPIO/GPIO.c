@@ -1,4 +1,4 @@
-#include "../include/GPIO.h"
+#include "../../include/GPIO.h"
 
 #define GPIO_MODE_MASK 0x00000018
 #define GPIO_SHIFT_MODE_MASK 0x00000003

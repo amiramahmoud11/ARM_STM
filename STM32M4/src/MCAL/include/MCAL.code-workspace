@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"path": "G:/ITI_9MON/STM32/MCAL"
+		},
+		{
+			"name": "GPIO",
+			"path": "../../.."
+		},
+		{
+			"name": "workspace",
+			"path": "G:/ITI_9MON/STM32/MCAL/STM32F401CC_DRIVERS/workspace"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"gpio.h": "c",
+			"led.h": "c",
+			"led_cfg.h": "c",
+			"nvic.h": "c",
+			"stm32f401cc_irq.h": "c"
+		}
+	}
+}
