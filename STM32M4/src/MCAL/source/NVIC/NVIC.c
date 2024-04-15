@@ -26,7 +26,7 @@ Ret_errorStatuse NVIC_DisableIRQ(IRQn_t IRQn)
 {
     Ret_errorStatuse Loc_error_status=Status_NOK;
     if (IRQn>_NVIC_IRQ_NUM)
-    {
+    { 
         Loc_error_status=Status_NOK;
     }
     else
