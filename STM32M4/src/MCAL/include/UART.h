@@ -1,6 +1,7 @@
 #ifndef UART_H_
 #define UART_H_
-
+#define USART_1 0
+#define USART_2 1
 #define USART_6 2
 #define USART_OVER_8  0x00008000
 #define USART_PARITY_ENABLE 0x00000400
@@ -13,7 +14,9 @@
 #define UART_TXEIE_ENABLE_FLAG 0x00000080
 #define USART_RXNEIE_ENABLE_FLAG 0x00000020
 #define USART_RX_DONE_IRQ  0x00000020
-
+#define USART_LBD_ENABLE ((u32)(1<<8))
+#define USART_TXE_ENABLE_FLAG ((u32)(1<<7))
+#define USART_RXE_ENABLE_FLAG ((u32)(1<<5))
 #define NULL ((void *)0)
 
 typedef unsigned char u8;
@@ -22,7 +25,7 @@ typedef unsigned int u32;
 
 // Callback function pointer type
 typedef void (*CallBack_t)(void);
-
+typedef void (*LBD_CallBack_t)(void);
 // Structure for UART configuration
 typedef struct 
 {
@@ -91,7 +94,7 @@ Error_tatuse UASART_SendByte(USART_Req_t Usart_Req);
  *  - Error status indicating success or failure.
  */
 
-Error_tatuse UASART_ReciveByte(USART_Req_t Usart_Req);
+Error_tatuse UASART_GetByte(USART_Req_t Usart_Req);
 
 /*
  * Send a buffer of data via USART.
@@ -100,7 +103,7 @@ Error_tatuse UASART_ReciveByte(USART_Req_t Usart_Req);
  * Return:
  *  - Error status indicating success or failure.
  */
-Error_tatuse UASART_SendBufferAsync(USART_Req_t Usart_Req);
+Error_tatuse UASART_SendBufferAsyncZeroCopy(USART_Req_t Usart_Req);
 
 /*
  * Receive a buffer of data via USART.
@@ -110,6 +113,6 @@ Error_tatuse UASART_SendBufferAsync(USART_Req_t Usart_Req);
  *  - Error status indicating success or failure.
  */
 
-Error_tatuse UASART_ReciveBufferAsync(USART_Req_t Usart_Req);
+Error_tatuse UASART_ReciveBufferAsyncZeroCopy(USART_Req_t Usart_Req);
 
 #endif

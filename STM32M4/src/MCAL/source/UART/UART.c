@@ -55,6 +55,7 @@ typedef struct
 void* UsartPrepherals[USART_PREPHERALS]={(void*)0x40011000 , (void*)0x40004400,(void*)0x40011400}; 
 TX_Req_t TX_Request[USART_PREPHERALS];    /**< Array of transmission requests */
 RX_Req_t RX_Request[USART_PREPHERALS];    /**< Array of receive requests */
+LBD_CallBack_t LBD_CB[USART_PREPHERALS]={NULL,NULL,NULL};
 
 // Function to initialize USART peripheral
 Error_tatuse uart_int(uart_configuration uart_config)
@@ -158,7 +159,7 @@ Error_tatuse UASART_SendByte(USART_Req_t Usart_Req)
 }
 
 // Function to receive a byte via USART
-Error_tatuse UASART_ReciveByte(USART_Req_t Usart_Req)
+Error_tatuse UASART_GetByte(USART_Req_t Usart_Req)
 {
     u32 Time_Out=1000;      /**< Timeout value */
     Error_tatuse loc_errorStatuse=Statuse_Nok; /**< Initialize error status to NOK */
@@ -210,7 +211,7 @@ Error_tatuse UASART_ReciveByte(USART_Req_t Usart_Req)
 
 /* send buffer */
 
-Error_tatuse UASART_SendBufferAsync(USART_Req_t Usart_Req)
+Error_tatuse UASART_SendBufferAsyncZeroCopy(USART_Req_t Usart_Req)
 {
     Error_tatuse loc_errorStatuse=Statuse_Nok;
 
@@ -253,7 +254,7 @@ Error_tatuse UASART_SendBufferAsync(USART_Req_t Usart_Req)
 
 /* receive buffer */
 
-Error_tatuse UASART_ReciveBufferAsync(USART_Req_t Usart_Req)
+Error_tatuse UASART_ReciveBufferAsyncZeroCopy(USART_Req_t Usart_Req)
 {
     Error_tatuse loc_errorStatuse=Statuse_Nok;
 
@@ -291,4 +292,183 @@ Error_tatuse UASART_ReciveBufferAsync(USART_Req_t Usart_Req)
     
     // Return error status
     return loc_errorStatuse;
+}
+
+//USART1_IRQHandler();
+
+void USART1_IRQHandler(void)
+{
+    if ( ((UART_REG *)UsartPrepherals[USART_1])->SR&USART_LBD_ENABLE)
+    {
+        /* clear LBD flag */
+        ((UART_REG *)UsartPrepherals[USART_1])->SR&=~USART_LBD_ENABLE;
+        if (LBD_CB[USART_1])
+        {
+           LBD_CB[USART_1](); 
+        }
+        
+
+    }
+    else
+    {
+        if (((UART_REG *)UsartPrepherals[USART_1])->SR&USART_TXE_ENABLE_FLAG)
+        {
+            if (TX_Request[USART_1].buffer.pos<TX_Request[USART_1].buffer.size)
+            {
+               ((UART_REG *)UsartPrepherals[USART_1])->DR=TX_Request[USART_1].buffer.data[TX_Request[USART_1].buffer.pos];
+               TX_Request[USART_1].buffer.pos++;
+            }
+            else
+            {
+                TX_Request[USART_1].state=USART_STATE_READY;
+                /*clear TEI*/
+                ((UART_REG *)UsartPrepherals[USART_1])->CR1&=~UART_TXEIE_ENABLE_FLAG;
+                /*notify user*/
+                TX_Request[USART_1].CallBack();
+            }
+            
+        }
+
+        if (((UART_REG *)UsartPrepherals[USART_1])->SR&USART_RXE_ENABLE_FLAG)
+        {
+            if (RX_Request[USART_1].buffer.pos<RX_Request[USART_1].buffer.size)
+            {
+               ((UART_REG *)UsartPrepherals[USART_1])->DR=RX_Request[USART_1].buffer.data[RX_Request[USART_1].buffer.pos];
+               RX_Request[USART_1].buffer.pos++;
+
+               if(RX_Request[USART_1].buffer.pos==RX_Request[USART_1].buffer.size)
+                {
+                    RX_Request[USART_1].state=USART_STATE_READY;
+                    /*clear REI*/
+                    ((UART_REG *)UsartPrepherals[USART_1])->CR1&=~USART_RXNEIE_ENABLE_FLAG;
+                    /*notify user*/
+                    RX_Request[USART_1].CallBack();
+                }
+            }
+            
+            
+        }
+        
+    }
+    
+}
+
+
+//USART2_IRQHandler();
+
+void USART2_IRQHandler(void)
+{
+    if ( ((UART_REG *)UsartPrepherals[USART_2])->SR&USART_LBD_ENABLE)
+    {
+        /* clear LBD flag */
+        ((UART_REG *)UsartPrepherals[USART_2])->SR&=~USART_LBD_ENABLE;
+        if (LBD_CB[USART_2])
+        {
+           LBD_CB[USART_2](); 
+        }
+        
+
+    }
+    else
+    {
+        if (((UART_REG *)UsartPrepherals[USART_2])->SR&USART_TXE_ENABLE_FLAG)
+        {
+            if (TX_Request[USART_2].buffer.pos<TX_Request[USART_2].buffer.size)
+            {
+               ((UART_REG *)UsartPrepherals[USART_2])->DR=TX_Request[USART_2].buffer.data[TX_Request[USART_2].buffer.pos];
+               TX_Request[USART_2].buffer.pos++;
+            }
+            else
+            {
+                TX_Request[USART_2].state=USART_STATE_READY;
+                /*clear TEI*/
+                ((UART_REG *)UsartPrepherals[USART_2])->CR1&=~UART_TXEIE_ENABLE_FLAG;
+                /*notify user*/
+                TX_Request[USART_2].CallBack();
+            }
+            
+        }
+
+        if (((UART_REG *)UsartPrepherals[USART_2])->SR&USART_RXE_ENABLE_FLAG)
+        {
+            if (RX_Request[USART_2].buffer.pos<RX_Request[USART_2].buffer.size)
+            {
+               ((UART_REG *)UsartPrepherals[USART_2])->DR=RX_Request[USART_2].buffer.data[RX_Request[USART_2].buffer.pos];
+               RX_Request[USART_2].buffer.pos++;
+
+               if(RX_Request[USART_2].buffer.pos==RX_Request[USART_2].buffer.size)
+                {
+                    RX_Request[USART_2].state=USART_STATE_READY;
+                    /*clear REI*/
+                    ((UART_REG *)UsartPrepherals[USART_2])->CR1&=~USART_RXNEIE_ENABLE_FLAG;
+                    /*notify user*/
+                    RX_Request[USART_2].CallBack();
+                }
+            }
+            
+            
+        }
+        
+    }
+    
+}
+
+
+//USART6_IRQHandler();
+
+void USART6_IRQHandler(void)
+{
+    if ( ((UART_REG *)UsartPrepherals[USART_6])->SR&USART_LBD_ENABLE)
+    {
+        /* clear LBD flag */
+        ((UART_REG *)UsartPrepherals[USART_6])->SR&=~USART_LBD_ENABLE;
+        if (LBD_CB[USART_6])
+        {
+           LBD_CB[USART_6](); 
+        }
+        
+
+    }
+    else
+    {
+        if (((UART_REG *)UsartPrepherals[USART_6])->SR&USART_TXE_ENABLE_FLAG)
+        {
+            if (TX_Request[USART_6].buffer.pos<TX_Request[USART_6].buffer.size)
+            {
+               ((UART_REG *)UsartPrepherals[USART_6])->DR=TX_Request[USART_6].buffer.data[TX_Request[USART_6].buffer.pos];
+               TX_Request[USART_6].buffer.pos++;
+            }
+            else
+            {
+                TX_Request[USART_6].state=USART_STATE_READY;
+                /*clear TEI*/
+                ((UART_REG *)UsartPrepherals[USART_6])->CR1&=~UART_TXEIE_ENABLE_FLAG;
+                /*notify user*/
+                TX_Request[USART_6].CallBack();
+            }
+            
+        }
+
+        if (((UART_REG *)UsartPrepherals[USART_6])->SR&USART_RXE_ENABLE_FLAG)
+        {
+            if (RX_Request[USART_6].buffer.pos<RX_Request[USART_6].buffer.size)
+            {
+               ((UART_REG *)UsartPrepherals[USART_6])->DR=RX_Request[USART_6].buffer.data[RX_Request[USART_6].buffer.pos];
+               RX_Request[USART_6].buffer.pos++;
+
+               if(RX_Request[USART_6].buffer.pos==RX_Request[USART_6].buffer.size)
+                {
+                    RX_Request[USART_6].state=USART_STATE_READY;
+                    /*clear REI*/
+                    ((UART_REG *)UsartPrepherals[USART_6])->CR1&=~USART_RXNEIE_ENABLE_FLAG;
+                    /*notify user*/
+                    RX_Request[USART_6].CallBack();
+                }
+            }
+            
+            
+        }
+        
+    }
+    
 }
